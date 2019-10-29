@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from urllib import request
-import csv
 
 url = 'https://www.cbssports.com/nfl/stats/playersort/nfl/year-2019-season-regular-category-touchdowns'
 page = request.urlopen(url)
