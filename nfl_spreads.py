@@ -1,6 +1,14 @@
 from bs4 import BeautifulSoup
 from urllib import request
-import json
+import argparse
+
+parse = argparse.ArgumentParser()
+parse.add_argument('--teamOne', nargs='?')
+parse.add_argument('--teamTwo', nargs='?')
+args = parse.parse_args()
+
+teamOne = str(args.teamOne)
+teamTwo = str(args.teamTwo)
 
 url = 'http://www.footballlocks.com/nfl_point_spreads.shtml'
 page = request.urlopen(url)
@@ -11,7 +19,7 @@ point_spreads_cooking1 = [table.find_all('tr')[1:] for table in point_spreads_ra
 point_spreads_cooking2 = [row for list in point_spreads_cooking1 for row in list]
 
 point_spreads = []
-
+point_spreads_dict = {}
 for row in point_spreads_cooking2:
     game = row.find_all('td')
     date = game[0].contents[0]
@@ -30,7 +38,14 @@ for row in point_spreads_cooking2:
     else:
         point_spreads.append(f'On {date}, the favorites to win are {favorite} against the underdog {underdog} with a spread of {spread}.')
 
+    point_spreads_dict[favorite,underdog] = [date,spread]
+
 def main():
+    if teamOne and teamTwo:
+        for a,b in point_spreads_dict.keys():
+            if all(x in [a,b] for x in [teamOne,teamTwo]):
+                print(f'On {point_spreads_dict[a,b][0]}, the favorites to win are {a} against the underdog {b} with a spread of {point_spreads_dict[a,b][1]}.')
+                raise SystemExit
     for game in point_spreads:
         print(game)
 
